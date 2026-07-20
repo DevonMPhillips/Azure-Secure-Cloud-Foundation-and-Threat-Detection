@@ -4,6 +4,7 @@ To design, deploy, and secure a baseline Azure environment from the ground up. I
 ---
 
 **Major Phases**
+
 Identity & Access Management (IAM): Securing the human and non-human perimeter.
 
 Network Security: Designing a segmented, firewalled virtual network.
@@ -21,6 +22,7 @@ Documentation & Portfolio Assembly: Translating technical work into professional
 
 
 **Technologies Used**
+
 Microsoft Entra ID (formerly Azure AD): Users, Groups, RBAC, Conditional Access/MFA.
 
 Azure Networking: Virtual Networks (VNet), Subnets, Network Security Groups (NSGs).
@@ -35,6 +37,7 @@ Microsoft Sentinel (SIEM): Log ingestion, Kusto Query Language (KQL), threat hun
 ---
 
 **Skills Implemented**
+
 Implementing Principle of Least Privilege via Azure RBAC.
 
 Architecting secure network boundaries and micro-segmentation.
@@ -53,6 +56,7 @@ Creating professional architecture diagrams and technical documentation.
 
 
 **Project Roadmap**
+
 Stage 1: Establishing the Identity Perimeter (Users, Groups, Custom RBAC Roles, and enforcing MFA).
 
 Stage 2: Building a Defensible Network Architecture (VNet creation, isolating subnets, configuring NSGs, and verifying blocked traffic).
@@ -68,12 +72,16 @@ Stage 6: Portfolio Polish (Finalizing diagrams, writing the README, and extracti
 
 ---
 
+
 **Stage 1: Establishing the Identity Perimeter** 
 
+
 Objectives:
+
 Establish a secure identity foundation by creating isolated user accounts, organizing them into logical groups, applying the Principle of Least Privilege (PoLP) through role assignments, and enforcing Multi-Factor Authentication (MFA).
 
-1.Create the Users:
+
+1. Create the Users:
 Log in to the Azure Portal using your root/free-tier account.Search for and navigate to Microsoft Entra ID.
 
 Under the Manage menu, select Users > All users > New user > Create new user.
@@ -85,3 +93,204 @@ Set a secure password and copy it down.
 Repeat the process to create a second user named auditor.
 
 <img width="952" height="612" alt="image" src="https://github.com/user-attachments/assets/fb83449a-c09d-470b-bbb8-55e75dec1b7b" />
+
+[az ad user create --display-name "auditor" --user-principal-name "auditor@devonphillips211gmail.onmicrosoft.com" --password "[SECRETPASSWORD]"]
+
+<img width="1001" height="277" alt="image" src="https://github.com/user-attachments/assets/accebb81-a8fd-4eaa-9dfb-17974abb9d2e" />
+
+
+2. Create Security Groups: Always assign roles to groups, not individual users.
+
+Navigate back to the Entra ID overview and select Groups > New group.
+Group type: Security.
+Group name: Cloud-Security-Admins. Leave membership type as Assigned.
+Under Members, add your sec-admin user. Click Create.
+Create a second group named Security-Auditors and add your auditor user to it.
+
+
+<img width="1001" height="627" alt="image" src="https://github.com/user-attachments/assets/6457737a-ff15-4dd4-89fe-872eaa472b48" />
+
+
+<img width="1257" height="635" alt="image" src="https://github.com/user-attachments/assets/a27c4079-33b6-4e5e-a224-9ea2715dcbfd" />
+
+
+az ad group create --display-name Auditor --mail-nickname Auditor
+<img width="1032" height="626" alt="image" src="https://github.com/user-attachments/assets/604c268e-1c75-4d29-b6ea-0e5d0f933380" />
+
+<img width="1090" height="670" alt="image" src="https://github.com/user-attachments/assets/3ee2894f-3586-4c42-9729-dc1bac6e9f73" />
+
+
+
+3. Assign Entra ID Roles: Granting tenant-level permissions.
+
+In Entra ID, go to Roles and administrators. 
+Search for the Global Reader role. Click on it, select Add assignments, and assign it to the Security-Auditors group. (This allows them to view identity settings but change nothing). Search for the Security Administrator role and assign it to the Cloud-Security-Admins group.
+
+
+
+<img width="1092" height="667" alt="image" src="https://github.com/user-attachments/assets/015c2fbe-5c51-4c52-85a5-47a7580852d0" />
+
+<img width="1092" height="667" alt="image" src="https://github.com/user-attachments/assets/13396251-cea4-4298-8fa5-285c5b30f337" />
+
+
+
+4. Enforce Multi-Factor Authentication: Using Security Defaults to keep costs at zero. (Note: Conditional Access policies are the enterprise standard, but require a paid Premium P1 license. We will use Security Defaults, Microsoft's free baseline).
+
+In the Entra ID overview menu, scroll down to Properties.
+
+At the bottom of the page, click the link for Manage security defaults. Ensure the toggle is set to Enabled. (If it prompts you to disable classic policies, accept it).
+
+Click Save. All users in the tenant are now required to register for MFA using the Microsoft Authenticator app.
+
+<img width="1092" height="862" alt="image" src="https://github.com/user-attachments/assets/148b134c-bb2c-4ec9-89eb-32ae9fc9b7cb" />
+
+
+---
+
+
+**Stage 2: Building a Defensible Network Architecture**
+
+Objectives
+
+Design a secure network foundation by deploying an Azure Virtual Network (VNet), segmenting it into public-facing and private tiers, and implementing strict traffic control using Network Security Groups (NSGs).
+
+Skills Being Learned
+Micro-segmentation: Dividing a network into isolated subnets based on resource function.
+
+Stateful Firewall Rules: Configuring NSGs to allow only specific, necessary traffic (Principle of Least Privilege at the network layer).
+
+Cloud Routing Basics: Understanding how traffic flows by default within an Azure VNet and how to restrict it.
+
+Architecture Overview
+You will build a classic "Two-Tier" architecture. You will create a VNet (VNet-Core) containing two subnets: Subnet-Web (for simulated public-facing web servers) and Subnet-Database (for simulated backend data servers).
+
+You will then attach an NSG to each subnet. The Web NSG will only allow HTTP/HTTPS from the internet. The Database NSG will completely block the internet and only accept traffic originating from the Web subnet.
+
+Services Used
+Azure Resource Groups, Azure Virtual Networks (VNet), Azure Network Security Groups (NSG)
+
+
+1. Create a Resource Group: The logical container for your project.
+
+In the Azure Portal, search for Resource groups. Click Create.
+
+Name it RG-SecureCloud-Prod.
+
+Select a region close to you (e.g., East US).
+
+Click Review + create, then Create.
+
+
+[az group create -l centralus -n RG-SecureCloud-Prod]
+<img width="720" height="215" alt="image" src="https://github.com/user-attachments/assets/9edd6436-cab5-4f58-8463-56b97cf325f4" />
+
+
+2. Deploy the Virtual Network and Subnets: Carving out your private IP space.
+
+Search for Virtual Networks and click Create.
+
+Select RG-SecureCloud-Prod as the Resource Group.
+
+Name it VNet-Core. Go to the IP Addresses tab. Azure usually defaults to a 10.0.0.0/16 space 
+with a default subnet.
+
+Delete the default subnet.
+
+Click Add subnet. Name it Subnet-Web with an address range of 10.0.1.0/24. Click Add.
+
+Click Add subnet again. Name it Subnet-Database with an address range of 10.0.2.0/24. Click Add.
+
+Click Review + create, then Create.
+
+
+[az network vnet create -n VNET-Core --resource-group RG-SecureCloud-Prod --subnet-name Subnet-Web --subnet-prefixes 10.0.1.0/24 && az network vnet subnet create --vnet-name VNET-Core -g RG-SecureCloud-Prod -n Subnet-Database --address-prefixes 10.0.2.0/24]
+
+
+Verify:
+[az network vnet subnet list --resource-group RG-SecureCloud-Prod --vnet-name VNET-Core --output table]
+
+<img width="1917" height="772" alt="image" src="https://github.com/user-attachments/assets/c7c49144-0a38-46af-88a8-482f1e400b97" />
+
+<img width="1092" height="622" alt="image" src="https://github.com/user-attachments/assets/bc714430-b357-44ca-8b39-ee011747c15a" />
+
+<img width="1241" height="97" alt="image" src="https://github.com/user-attachments/assets/156a8786-150b-4945-bd25-2d5a26c89a9d" />
+
+
+3. Create Network Security Groups: Creating the boundary firewalls.
+
+Search for Network security groups and click Create.
+
+Select your RG-SecureCloud-Prod resource group. Name the NSG NSG-Web-Tier and click Create.
+
+Repeat this process to create a second NSG named NSG-Database-Tier.
+
+
+[az network nsg create --resource-group RG-SecureCloud-Prod --name NSG-Web-Tier --location centralus && az network nsg create --resource-group RG-SecureCloud-Prod --name NSG-Database-Tier --location centralus]
+
+
+4. Configure Security Rules: Applying Least Privilege to network traffic. 
+
+Navigate to NSG-Web-Tier. Under Settings, click Inbound security rules. 
+
+Add a rule to allow HTTPS: 
+  Source: AnySource 
+  port ranges: *
+  Destination: 
+  AnyService: HTTPS (Port 443)
+  Action: Allow
+  Priority: 100
+  Name: Allow-HTTPS-Inbound
+  Navigate to NSG-Database-Tier.
+
+
+<img width="1092" height="827" alt="image" src="https://github.com/user-attachments/assets/335402fc-7530-415a-8afc-144658017423" />
+
+
+Go to Inbound security rules.
+
+Add a rule to only allow traffic from the Web Subnet:
+  Source: IP Addresses -> 10.0.1.0/24 (This is your Web Subnet)
+  Source port ranges: *
+  Destination: Any
+  Destination port ranges: 1433 (Standard SQL port)
+  Action: Allow
+  Priority: 110
+  Name: Allow-SQL-From-Web
+
+
+<img width="1092" height="861" alt="image" src="https://github.com/user-attachments/assets/2892e18d-75b5-4d87-8300-1e9edf5283f4" />
+
+
+Add a second rule to explicitly deny all other VNet traffic to the database (Azure allows all VNet-to-VNet traffic by default):
+
+Source: VirtualNetwork
+
+  Source port ranges: *
+  Destination: Any
+  Destination port ranges: *
+  Action: Deny
+  Priority: 4000 (Must be higher than the default allow rules but lower priority than your      SQL allow rule)
+  Name: Deny-Other-VNet-Traffic
+
+
+<img width="1091" height="865" alt="image" src="https://github.com/user-attachments/assets/f5b801c2-ff2f-4af5-8aac-d178fc546273" />
+
+
+5. Associate NSGs to Subnets: Binding the firewalls to the network segments.
+
+While still in NSG-Database-Tier, click Subnets under Settings.
+
+Click Associate, select VNet-Core, and select Subnet-Database.
+
+Navigate back to NSG-Web-Tier, click Subnets, and associate it with Subnet-Web.
+  
+
+<img width="1091" height="862" alt="image" src="https://github.com/user-attachments/assets/30bf0216-92a5-43f0-9cc0-ec0cc21f5363" />
+
+
+[az network vnet subnet update --resource-group RG-SecureCloud-Prod --vnet-name VNET-Core --name Subnet-Web --network-security-group NSG-Web-Tier]
+
+<img width="1095" height="335" alt="image" src="https://github.com/user-attachments/assets/480f9b8f-a572-4d7e-8150-a29715658cf9" />
+
+
+<img width="1092" height="862" alt="image" src="https://github.com/user-attachments/assets/c41d0540-0b90-4005-8314-5cf77e425962" />
