@@ -57,6 +57,7 @@ Creating professional architecture diagrams and technical documentation.
 
 **Project Roadmap**
 
+
 Stage 1: Establishing the Identity Perimeter (Users, Groups, Custom RBAC Roles, and enforcing MFA).
 
 Stage 2: Building a Defensible Network Architecture (VNet creation, isolating subnets, configuring NSGs, and verifying blocked traffic).
@@ -92,9 +93,13 @@ Set a secure password and copy it down.
 
 Repeat the process to create a second user named auditor.
 
+
 <img width="952" height="612" alt="image" src="https://github.com/user-attachments/assets/fb83449a-c09d-470b-bbb8-55e75dec1b7b" />
 
+
+CLI:
 [az ad user create --display-name "auditor" --user-principal-name "auditor@devonphillips211gmail.onmicrosoft.com" --password "[SECRETPASSWORD]"]
+
 
 <img width="1001" height="277" alt="image" src="https://github.com/user-attachments/assets/accebb81-a8fd-4eaa-9dfb-17974abb9d2e" />
 
@@ -130,6 +135,7 @@ Search for the Global Reader role. Click on it, select Add assignments, and assi
 
 <img width="1092" height="667" alt="image" src="https://github.com/user-attachments/assets/015c2fbe-5c51-4c52-85a5-47a7580852d0" />
 
+
 <img width="1092" height="667" alt="image" src="https://github.com/user-attachments/assets/13396251-cea4-4298-8fa5-285c5b30f337" />
 
 
@@ -141,6 +147,7 @@ In the Entra ID overview menu, scroll down to Properties.
 At the bottom of the page, click the link for Manage security defaults. Ensure the toggle is set to Enabled. (If it prompts you to disable classic policies, accept it).
 
 Click Save. All users in the tenant are now required to register for MFA using the Microsoft Authenticator app.
+
 
 <img width="1092" height="862" alt="image" src="https://github.com/user-attachments/assets/148b134c-bb2c-4ec9-89eb-32ae9fc9b7cb" />
 
@@ -181,7 +188,10 @@ Select a region close to you (e.g., East US).
 Click Review + create, then Create.
 
 
+CLI:
 [az group create -l centralus -n RG-SecureCloud-Prod]
+
+
 <img width="720" height="215" alt="image" src="https://github.com/user-attachments/assets/9edd6436-cab5-4f58-8463-56b97cf325f4" />
 
 
@@ -203,15 +213,19 @@ Click Add subnet again. Name it Subnet-Database with an address range of 10.0.2.
 Click Review + create, then Create.
 
 
+CLI:
 [az network vnet create -n VNET-Core --resource-group RG-SecureCloud-Prod --subnet-name Subnet-Web --subnet-prefixes 10.0.1.0/24 && az network vnet subnet create --vnet-name VNET-Core -g RG-SecureCloud-Prod -n Subnet-Database --address-prefixes 10.0.2.0/24]
 
 
 Verify:
 [az network vnet subnet list --resource-group RG-SecureCloud-Prod --vnet-name VNET-Core --output table]
 
+
 <img width="1917" height="772" alt="image" src="https://github.com/user-attachments/assets/c7c49144-0a38-46af-88a8-482f1e400b97" />
 
+
 <img width="1092" height="622" alt="image" src="https://github.com/user-attachments/assets/bc714430-b357-44ca-8b39-ee011747c15a" />
+
 
 <img width="1241" height="97" alt="image" src="https://github.com/user-attachments/assets/156a8786-150b-4945-bd25-2d5a26c89a9d" />
 
@@ -225,6 +239,7 @@ Select your RG-SecureCloud-Prod resource group. Name the NSG NSG-Web-Tier and cl
 Repeat this process to create a second NSG named NSG-Database-Tier.
 
 
+CLI:
 [az network nsg create --resource-group RG-SecureCloud-Prod --name NSG-Web-Tier --location centralus && az network nsg create --resource-group RG-SecureCloud-Prod --name NSG-Database-Tier --location centralus]
 
 
@@ -288,9 +303,231 @@ Navigate back to NSG-Web-Tier, click Subnets, and associate it with Subnet-Web.
 <img width="1091" height="862" alt="image" src="https://github.com/user-attachments/assets/30bf0216-92a5-43f0-9cc0-ec0cc21f5363" />
 
 
+CLI:
 [az network vnet subnet update --resource-group RG-SecureCloud-Prod --vnet-name VNET-Core --name Subnet-Web --network-security-group NSG-Web-Tier]
+
 
 <img width="1095" height="335" alt="image" src="https://github.com/user-attachments/assets/480f9b8f-a572-4d7e-8150-a29715658cf9" />
 
 
 <img width="1092" height="862" alt="image" src="https://github.com/user-attachments/assets/c41d0540-0b90-4005-8314-5cf77e425962" />
+
+
+
+---
+
+
+**Stage 3: Securing Data Assets** 
+
+Objectives
+
+Deploy a cloud storage solution and a secrets management vault, hardening both against unauthorized access, public exposure, and accidental data loss
+
+
+
+Architecture Overview
+
+You will deploy an Azure Storage Account simulating where your web application stores user uploads. You will explicitly block all anonymous public access and enable retention policies to recover deleted data. Then, you will deploy an Azure Key Vault to act as a secure safe for the application's database credentials, using modern Azure RBAC to control who can view the secrets.
+
+1. Deploy a Hardened Storage Account: Creating a secure-by-default storage bucket. In the Azure Portal, search for Storage accounts and click Create.
+
+Select your RG-SecureCloud-Prod resource group. 
+
+Storage account name: This must be globally unique across all of Azure 
+
+Region: Choose the same region as your VNet.
+
+Performance: Standard (keeps costs at zero). 
+
+Redundancy: Locally-redundant storage (LRS).
+
+Go to the Advanced tab. Ensure Require secure transfer for REST API operations is checked. 
+
+CRITICAL: Uncheck Allow enabling anonymous access on individual containers. This enforces a tenant-level block on public exposure. 
+
+Minimum TLS version: Version 1.2. 
+
+Click Review, then Create.
+
+
+CLI:
+[az storage account create -n securestoredmp -g RG-SecureCloud-Prod -l centralus --sku Standard_LRS --https-only true --allow-blob-public-access false --min-tls-version TLS1_2]
+
+
+
+<img width="1095" height="615" alt="image" src="https://github.com/user-attachments/assets/b7db723d-0601-447a-ae3c-10fd5e9c98df" />
+
+
+
+2. Configure Data Protection (Soft Delete): Protecting against accidental or malicious deletion. 
+
+Once the Storage Account deploys, navigate to it. 
+
+In the left menu under Data management, select Data protection. 
+
+Under Recovery, ensure Enable soft delete for blobs and Enable soft delete for containers are both checked.
+
+Set the retention policy to 7 days (sufficient for our project).
+
+Click Save at the top.
+
+
+CLI:
+[az storage account blob-service-properties update --resource-group RG-SecureCloud-Prod --account-name securestoredmp --enable-delete-retention true --delete-retention-days 7]
+
+
+Verify: 
+[az storage account blob-service-properties show --resource-group RG-SecureCloud-Prod --account-name securestoredmp --output jsonc]
+
+
+<img width="1091" height="817" alt="image" src="https://github.com/user-attachments/assets/a07054d5-6a9e-43bd-a686-d598cccec712" />
+
+
+3. Deploy Azure Key Vault: Centralizing sensitive credentials. 
+
+Search for Key vaults and click Create. 
+
+Select your RG-SecureCloud-Prod resource group. 
+
+Key vault name: Must also be globally unique (e.g., kv-secureapp-jm824).
+
+Region: Same as your VNet. 
+
+Pricing tier: Standard.
+
+Go to the Access configuration tab. 
+
+CRITICAL: Change the Permission model from Vault access policy to Azure role-based access control (recommended). This is the modern standard for Azure security. 
+
+Click Review + create, then Create.
+
+
+CLI:
+[az keyvault create --name kv-secureapp-dmp --resource-group RG-SecureCloud-Prod --location centralus --sku standard --enable-rbac-authorization true]
+
+
+Verify:
+[az keyvault show --name kv-secureapp-dmp --resource-group RG-SecureCloud-Prod --output jsonc]
+
+
+<img width="1092" height="506" alt="image" src="https://github.com/user-attachments/assets/7a381eba-afff-41e5-966c-13665ae491ab" />
+
+
+
+4. Assign Key Vault RBAC Roles: Managing data-plane access to secrets.
+
+Navigate to your newly created Key Vault.
+
+Click on Access control (IAM) in the left menu.
+
+Click Add > Add role assignment.
+
+Search for the Key Vault Secrets Officer role (this allows creating and managing secrets). 
+
+
+<img width="1096" height="610" alt="image" src="https://github.com/user-attachments/assets/0f0bec36-0007-4c31-b293-27549f41b102" />
+
+
+
+Select it and click Next.
+
+Under Members, click Select members, search for your sec-admin user, and select them.
+
+Click Review + assign.
+
+
+<img width="1090" height="606" alt="image" src="https://github.com/user-attachments/assets/4bdd0e02-de2f-4ab6-86c3-aff14b0ae82b" />
+
+
+5. Create a Test Secret: Testing the vault functionality.
+
+Make sure you are logged in as the sec-admin user for this step, or assign the role to your current root account as well. 
+
+In your Key Vault, select Secrets under Objects. 
+
+Click Generate/Import. 
+
+Name: DB-Password. 
+Secret value: SuperSecretP@ssw0rd123! (or any test password). 
+
+Click Create.
+
+
+<img width="1092" height="866" alt="image" src="https://github.com/user-attachments/assets/0dcac49d-03e1-4815-984a-33270df1efe0" />
+
+
+---
+
+
+**Stage 4: Enabling Visibility and Posture Management**
+
+
+Objectives
+
+Deploy a centralized logging repository to collect audit trails, configure resources to forward their logs, and enable Cloud Security Posture Management (CSPM) to continuously assess the environment for misconfigurations.
+
+
+Architecture Overview
+
+You will create a Log Analytics Workspace (LAW-SecureCloud). You will then go back to the Key Vault you built in Stage 3 and configure its "Diagnostic Settings" to forward all audit logs to this workspace. Finally, you will activate the free foundational tier of Microsoft Defender for Cloud to scan your subscription and generate a Secure Score.
+
+
+Services Used
+
+- Azure Log Analytics Workspace
+- Microsoft Defender for Cloud (Foundational CSPM)
+
+1. Create a Log Analytics Workspace: Deploying the data engine for Azure security.
+
+In the Azure Portal, search for Log Analytics workspaces and click Create. 
+
+Select your RG-SecureCloud-Prod resource group. 
+
+Name it LAW-SecureCloud. 
+
+Region: Choose the same region you have been using. 
+
+Click Review + Create, then Create.
+
+
+<img width="1097" height="637" alt="image" src="https://github.com/user-attachments/assets/6c6c7a23-4492-43a9-8b0b-c715a236f814" />
+
+
+CLI: 
+[az monitor log-analytics workspace create --resource-group RG-SecureCloud-Prod --workspace-name LAW-SecureCloud --location centralus]
+
+
+
+
+2. Configure Diagnostic Settings for Key Vault: Telling resources where to send their audit trails.
+
+Navigate back to your Key Vault (kv-secureapp-dmp).
+
+In the left menu, scroll down to the Monitoring section and select Diagnostic settings.
+
+Click Add diagnostic setting. 
+
+Setting name: Send-Audit-to-LAW.
+
+Under Logs, check the box for audit (this tracks who accesses the vault).
+
+Under Destination details, check Send to Log Analytics workspace.
+
+Select your subscription and choose LAW-SecureCloud from the dropdown.
+
+Click Save at the top.
+
+
+<img width="1092" height="637" alt="image" src="https://github.com/user-attachments/assets/4d2c83fb-1077-4b51-a5c4-b1bd920c7c11" />
+
+
+
+3. Generate Audit Logs: Generating telemetry for testing.
+
+While still in the Key Vault, go to Secrets under Objects.
+
+Click on the DB-Password secret you made earlier.
+
+Click on the current version of the secret.
+
+Click Show Secret Value. (This action creates an audit event recording that your user account viewed the secret).
