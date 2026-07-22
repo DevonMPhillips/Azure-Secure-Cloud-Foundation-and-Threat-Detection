@@ -531,3 +531,20 @@ Click on the DB-Password secret you made earlier.
 Click on the current version of the secret.
 
 Click Show Secret Value. (This action creates an audit event recording that your user account viewed the secret).
+
+
+
+
+4. Onboard Defender for Cloud: Enabling continuous compliance scanning.
+
+Search for Microsoft Defender for Cloud in the top search bar.
+
+In the left menu, scroll down to Management and click Environment settings.
+
+Click on your Azure Subscription.
+
+In the Defender plans page, look at the Foundational CSPM (Cloud Security Posture Management) tier. Ensure its status is On (it is free and usually on by default).
+
+We will strictly use the Foundational/Free tier for this project—do not enable the paid Defender for Servers/Storage plans unless you are prepared for minor daily charges.
+
+
