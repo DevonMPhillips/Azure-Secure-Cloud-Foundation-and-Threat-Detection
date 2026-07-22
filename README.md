@@ -548,3 +548,135 @@ In the Defender plans page, look at the Foundational CSPM (Cloud Security Postur
 We will strictly use the Foundational/Free tier for this project—do not enable the paid Defender for Servers/Storage plans unless you are prepared for minor daily charges.
 
 
+
+Verification & Testing
+
+Verify Log Ingestion:
+
+Navigate to your LAW-SecureCloud workspace.
+
+Under General, select Logs. (Close the starter query popup).
+
+In the query window, type the following Kusto Query Language (KQL) command:
+
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+
+<img width="1051" height="852" alt="image" src="https://github.com/user-attachments/assets/a698eead-213d-4546-899a-ff523df2cdbb" />
+
+
+
+You should see the audit logs generated when you viewed the secret.
+
+
+
+<img width="1917" height="860" alt="image" src="https://github.com/user-attachments/assets/be9b6321-a697-4750-9546-8109d571706d" />
+
+
+
+---
+
+**Stage 5: SIEM Deployment and Incident Simulation** 
+
+Objectives
+
+Deploy a Security Information and Event Management (SIEM) solution, create a custom detection rule using KQL, simulate a security event, and execute basic incident response workflows.
+
+
+Architecture Overview
+
+Microsoft Sentinel does not store data itself; it sits on top of the Log Analytics Workspace (LAW-SecureCloud) you built in Stage 4. You will activate Sentinel on that workspace. Then, you will write an Analytics Rule that constantly scans the incoming AzureDiagnostics logs. If it sees an event where someone views your Key Vault secret, it will fire an alert and generate an Incident ticket for you to investigate.
+
+
+
+1. Onboard Microsoft Sentinel: Activating the SIEM on top of your logging data.
+
+In the Azure Portal search bar, type Microsoft Sentinel and select it. Click Create (or Add).
+
+You will see a list of available workspaces. Select the LAW-SecureCloud workspace you created in Stage 4. 
+
+Click Add. Within a few moments, the Sentinel dashboard will load.
+
+
+<img width="952" height="867" alt="image" src="https://github.com/user-attachments/assets/33a91428-89a2-44a6-9a19-b2cb883dd3b7" />
+
+
+
+2. Create a Custom Analytics Rule: Turning raw logs into actionable alerts.
+
+In the Microsoft Sentinel left menu, under Configuration, click Analytics.
+
+Click Create at the top, then select Scheduled query rule. 
+
+General Tab:
+
+  Name: Key Vault Secret Accessed
+  
+  Description: Detects when a user views the plain-text value of a Key Vault secret.
+  
+  Tactics: Select Credential Access.
+  
+  Severity: Medium.
+  
+  Click Next.
+
+Set rule logic Tab:In the Rule query box, paste the following KQL command:
+
+  kqlAzureDiagnostics
+  | where ResourceProvider == "MICROSOFT.KEYVAULT"
+  | where OperationName == "SecretGet"
+  
+Scroll down to Query scheduling. Set Run query every to 5 minutes and Lookup data from the last to 5 minutes.
+
+Click Next.
+
+Incident settings Tab: Ensure Create incidents from alerts triggered by this analytics rule is Enabled.
+
+Click Review + create, then click Save.
+
+
+<img width="955" height="865" alt="image" src="https://github.com/user-attachments/assets/255eeffe-d65d-4b26-9d8b-315a294ab1e9" />
+
+
+3. Simulate the Attack: Acting like the adversary.
+
+Open a new tab and navigate back to your Key Vault (kv-secureapp-...).
+
+Go to Secrets under Objects and click your DB-Password secret.
+
+Click the current version, then click Show Secret Value.
+
+This action generates the exact SecretGet event your new Sentinel rule is actively looking for.
+
+
+<img width="957" height="866" alt="image" src="https://github.com/user-attachments/assets/dbd8e552-122e-44a3-b542-23bfe180ce65" />
+
+
+
+4. Investigate and Close the Incident: Working the SOC queue.
+
+Go back to your Microsoft Sentinel tab.
+
+In the left menu, under Threat management, click Incidents.
+
+Wait a few minutes (hit the refresh button occasionally). 
+
+Your Key Vault Secret Accessed incident will appear in the queue.Click on the incident to open the details pane on the right. 
+
+Click View full details.
+
+Review the timeline and the raw logs to confirm it was your user account that triggered it.
+
+Change the Status dropdown from New to Closed.
+
+Select the classification True Positive - Suspicious activity (or benign positive, since it was just a test) and add a comment: "Testing custom analytics rule. Confirmed alert fired successfully upon secret access."
+
+
+If the incident appears in the Sentinel queue and you are successfully able to close it with a classification, the SIEM pipeline is working flawlessly.
+
+
+<img width="956" height="865" alt="image" src="https://github.com/user-attachments/assets/f35f0b75-d8c4-4b40-81c5-c827cc1eb400" />
+
+
+<img width="956" height="861" alt="image" src="https://github.com/user-attachments/assets/1e94ae49-d980-4ffc-9f4d-fe11d54c8065" />
