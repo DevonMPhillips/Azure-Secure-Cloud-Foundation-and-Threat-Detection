@@ -2,90 +2,79 @@
 
 Designed, deployed, and secured a baseline Azure environment from the ground up. Implementing identity controls, segmented virtual networks, secured storage assets, and established a continuous security monitoring and incident response baseline.
 
+---
+
+### Major Phases
+
+- Identity & Access Management: Securing the human and non-human perimeter.
+
+- Network Security: Designing a segmented, firewalled virtual network.
+
+- Data Protection: Securing storage and managing cryptographic keys.
+
+- Security Posture & Monitoring: Centralizing logs and evaluating compliance.
+
+- Threat Detection & Response: Deploying a SIEM and simulating an attack.
 
 ---
 
+### Technologies Used
 
-**Major Phases**
+- Microsoft Entra ID: Users, Groups, RBAC, Conditional Access/MFA.
 
+- Azure Networking: Virtual Networks, Subnets, Network Security Groups.
 
-Identity & Access Management: Securing the human and non-human perimeter.
+- Azure Storage & Key Vault: Blob storage, encryption, secrets management.
 
-Network Security: Designing a segmented, firewalled virtual network.
+- Microsoft Defender for Cloud: Cloud Security Posture Management, vulnerability assessments.
 
-Data Protection: Securing storage and managing cryptographic keys.
-
-Security Posture & Monitoring: Centralizing logs and evaluating compliance.
-
-Threat Detection & Response: Deploying a SIEM and simulating an attack.
-
+- Microsoft Sentinel: Log ingestion, Kusto Query Language (KQL), threat hunting.
 
 ---
 
+### Skills Implemented
 
-**Technologies Used**
+- Implementing Principle of Least Privilege via Azure RBAC.
 
+- Architecting secure network boundaries and micro-segmentation.
 
-Microsoft Entra ID: Users, Groups, RBAC, Conditional Access/MFA.
+- Securing cloud storage against public exposure and data exfiltration.
 
-Azure Networking: Virtual Networks, Subnets, Network Security Groups.
+- Centralizing audit logs using Log Analytics Workspaces.
 
-Azure Storage & Key Vault: Blob storage, encryption, secrets management.
+- Deploying and configuring a Microsoft Sentinel SIEM.
 
-Microsoft Defender for Cloud: Cloud Security Posture Management, vulnerability assessments.
+- Executing basic Incident Response workflows.
 
-Microsoft Sentinel: Log ingestion, Kusto Query Language (KQL), threat hunting.
-
-
----
-
-
-**Skills Implemented**
-
-
-Implementing Principle of Least Privilege via Azure RBAC.
-
-Architecting secure network boundaries and micro-segmentation.
-
-Securing cloud storage against public exposure and data exfiltration.
-
-Centralizing audit logs using Log Analytics Workspaces.
-
-Deploying and configuring a Microsoft Sentinel SIEM.
-
-Executing basic Incident Response workflows.
-
-Creating professional architecture diagrams and technical documentation.
-
+- Creating professional architecture diagrams and technical documentation.
 
 ---
 
+### Project Roadmap
 
-**Project Roadmap**
+- Stage 1: Establishing the Identity Perimeter. Users, Groups, Custom RBAC Roles, and enforcing MFA.
 
+- Stage 2: Building a Defensible Network Architecture. VNet creation, isolating subnets, configuring NSGs, and verifying blocked traffic.
 
-Stage 1: Establishing the Identity Perimeter. Users, Groups, Custom RBAC Roles, and enforcing MFA.
+- Stage 3: Securing Data Assets. Deploying a Storage Account, disabling public access, configuring Key Vault, and setting up logging.
 
-Stage 2: Building a Defensible Network Architecture. VNet creation, isolating subnets, configuring NSGs, and verifying blocked traffic.
+- Stage 4: Enabling Visibility and Posture Management. Setting up Log Analytics, onboarding Defender for Cloud, and reviewing security recommendations.
 
-Stage 3: Securing Data Assets. Deploying a Storage Account, disabling public access, configuring Key Vault, and setting up logging.
+- Stage 5: SIEM Deployment and Incident Simulation. Deploying Microsoft Sentinel, generating a malicious event, and investigating the alert.
 
-Stage 4: Enabling Visibility and Posture Management. Setting up Log Analytics, onboarding Defender for Cloud, and reviewing security recommendations.
+<br>
 
-Stage 5: SIEM Deployment and Incident Simulation. Deploying Microsoft Sentinel, generating a malicious event, and investigating the alert.
+# Project Walkthrough - Full
 
-## Walkthrough
+<br>
 
+## Stage 1: Establishing the Identity Perimeter
 
-### Stage 1: Establishing the Identity Perimeter
-
-Objectives:
+### Objectives:
 
 - Establish a secure identity foundation by creating isolated user accounts, organizing them into logical groups, applying the Principle of Least Privilege through role assignments, and enforcing Multi-Factor Authentication.
 
-
 #### 1. Create the Users:
-
 
 Log in to the Azure Portal.
 
@@ -99,16 +88,11 @@ Set a secure password and copy it down.
 
 I will repeat the process to create a second user named auditor.
 
-
 <img width="952" height="612" alt="image" src="https://github.com/user-attachments/assets/fb83449a-c09d-470b-bbb8-55e75dec1b7b" />
-
 
 <img width="1001" height="277" alt="image" src="https://github.com/user-attachments/assets/accebb81-a8fd-4eaa-9dfb-17974abb9d2e" />
 
-
-
 #### 2. Create Security Groups: 
-
 
 Navigate back to the Entra ID overview and select Groups > New group.
 
@@ -120,22 +104,15 @@ Under Members, add the sec-admin user. Click Create.
 
 Create a second group named Auditors and add the auditor user to it.
 
-
 <img width="1001" height="627" alt="image" src="https://github.com/user-attachments/assets/6457737a-ff15-4dd4-89fe-872eaa472b48" />
-
 
 <img width="1257" height="635" alt="image" src="https://github.com/user-attachments/assets/a27c4079-33b6-4e5e-a224-9ea2715dcbfd" />
 
-
 <img width="1032" height="626" alt="image" src="https://github.com/user-attachments/assets/604c268e-1c75-4d29-b6ea-0e5d0f933380" />
-
 
 <img width="1090" height="670" alt="image" src="https://github.com/user-attachments/assets/3ee2894f-3586-4c42-9729-dc1bac6e9f73" />
 
-
-
 #### 3. Assign Entra ID Roles: Granting tenant-level permissions.
-
 
 In Entra ID, go to Roles and administrators. 
 
@@ -145,17 +122,11 @@ Click on it, select Add assignments, and assign it to the Security-Auditors grou
 
 Search for the Security Administrator role and assign it to the Cloud-Security-Admins group.
 
-
-
 <img width="1092" height="667" alt="image" src="https://github.com/user-attachments/assets/015c2fbe-5c51-4c52-85a5-47a7580852d0" />
-
 
 <img width="1092" height="667" alt="image" src="https://github.com/user-attachments/assets/13396251-cea4-4298-8fa5-285c5b30f337" />
 
-
-
 #### 4. Enforce Multi-Factor Authentication. 
-
 
 In the Entra ID overview menu, scroll down to Properties.
 
@@ -163,32 +134,27 @@ At the bottom of the page, click the link for Manage security defaults. Ensure t
 
 Click Save. Now all users in the tenant are now required to register for MFA using the Microsoft Authenticator app.
 
-
 <img width="1092" height="862" alt="image" src="https://github.com/user-attachments/assets/148b134c-bb2c-4ec9-89eb-32ae9fc9b7cb" />
 
+<br>
 
----
+## Stage 2: Building a Defensible Network Architecture
 
+<br>
 
-### Stage 2: Building a Defensible Network Architecture
-
-
-Objectives:
+### Objectives:
 
 - Designed a secure network foundation by deploying an Azure Virtual Network, segmenting it into public-facing and private tiers, and implementing strict traffic control using Network Security Groups.
 
-
-Architecture Overview:
+### Architecture Overview:
 
 I built a Two-Tier architecture. I will created a VNet containing two subnets: Subnet-Web for simulated public-facing web servers and Subnet-Database for simulated backend data servers.
 
 I then attach an NSG to each subnet. The Web NSG will only allow HTTP/HTTPS from the internet. The Database NSG will completely block the internet and only accept traffic originating from the Web subnet.
 
-
-Services Used:
+### Services Used:
 
 Azure Resource Groups, Azure Virtual Networks, Azure Network Security Groups
-
 
 #### 1. Create a Resource Group:
 
@@ -200,9 +166,7 @@ Select a region close to you (e.g., East US).
 
 Click Review + create, then Create.
 
-
 <img width="720" height="215" alt="image" src="https://github.com/user-attachments/assets/9edd6436-cab5-4f58-8463-56b97cf325f4" />
-
 
 #### 2. Deploy the Virtual Network and Subnets:
 
@@ -221,15 +185,11 @@ Click Add subnet again. Name it Subnet-Database with an address range of 10.0.2.
 
 Click Review + create, then Create.
 
-
 <img width="1917" height="772" alt="image" src="https://github.com/user-attachments/assets/c7c49144-0a38-46af-88a8-482f1e400b97" />
-
 
 <img width="1092" height="622" alt="image" src="https://github.com/user-attachments/assets/bc714430-b357-44ca-8b39-ee011747c15a" />
 
-
 <img width="1241" height="97" alt="image" src="https://github.com/user-attachments/assets/156a8786-150b-4945-bd25-2d5a26c89a9d" />
-
 
 #### 3. Create Network Security Groups: Creating the boundary firewalls.
 
@@ -238,8 +198,6 @@ Search for Network security groups and click Create.
 Select your RG-SecureCloud-Prod resource group. Name the NSG NSG-Web-Tier and click Create.
 
 Repeat this process to create a second NSG named NSG-Database-Tier.
-
-
 
 #### 4. Configure Security Rules: Applying Least Privilege to network traffic. 
 
@@ -260,11 +218,11 @@ Add a rule to allow HTTPS:
 
 <img width="1092" height="827" alt="image" src="https://github.com/user-attachments/assets/335402fc-7530-415a-8afc-144658017423" />
 
-
 Go to Inbound security rules.
 
 Add a rule to only allow traffic from the Web Subnet:
 
+| Property | Configuration | Purpose |
 |---|---|---|
 | Rule Name | Allow-SQL-From-Web | Identifies the purpose of the network security rule |
 | Source | IP Address: 10.0.1.0/24 (Web Subnet) | Restricts SQL access to only approved web-tier resources |
@@ -275,12 +233,9 @@ Add a rule to only allow traffic from the Web Subnet:
 | Action | Allow | Permits approved database connections |
 | Priority | 110 | Evaluated before broader deny rules |
 
-
 <img width="1092" height="861" alt="image" src="https://github.com/user-attachments/assets/2892e18d-75b5-4d87-8300-1e9edf5283f4" />
 
-
 Add a second rule to explicitly deny all other VNet traffic to the database:
-
 
 | Property | Configuration | Purpose |
 |---|---|---|
@@ -296,7 +251,6 @@ Add a second rule to explicitly deny all other VNet traffic to the database:
 
 <img width="1091" height="865" alt="image" src="https://github.com/user-attachments/assets/f5b801c2-ff2f-4af5-8aac-d178fc546273" />
 
-
 #### 5. Associate NSGs to Subnets: Binding the firewalls to the network segments.
 
 While still in NSG-Database-Tier, click Subnets under Settings.
@@ -305,34 +259,23 @@ Click Associate, select VNet-Core, and select Subnet-Database.
 
 Navigate back to NSG-Web-Tier, click Subnets, and associate it with Subnet-Web.
   
-
 <img width="1091" height="862" alt="image" src="https://github.com/user-attachments/assets/30bf0216-92a5-43f0-9cc0-ec0cc21f5363" />
-
 
 <img width="1095" height="335" alt="image" src="https://github.com/user-attachments/assets/480f9b8f-a572-4d7e-8150-a29715658cf9" />
 
-
 <img width="1092" height="862" alt="image" src="https://github.com/user-attachments/assets/c41d0540-0b90-4005-8314-5cf77e425962" />
-
-
 
 ---
 
+## Stage 3: Securing Data Assets
 
-
-### Stage 3: Securing Data Assets
-
-Objectives
+### Objectives
 
 - Deployed a cloud storage solution and a secrets management vault, hardening both against unauthorized access, public exposure, and accidental data loss
 
-
-
-Architecture Overview
+### Architecture Overview
 
 I deployed an Azure Storage Account simulating where my web application stored user uploads. I then  explicitly blocked all anonymous public access and enable retention policies to recover deleted data. Then, I deployed an Azure Key Vault to act as a secure safe for the application's database credentials, using Azure RBAC to control who can view the secrets.
-
-
 
 #### 1. Deploy a Hardened Storage Account:
 
@@ -356,11 +299,7 @@ Minimum TLS version: Version 1.2.
 
 Click Review, then Create.
 
-
-
 <img width="1095" height="615" alt="image" src="https://github.com/user-attachments/assets/b7db723d-0601-447a-ae3c-10fd5e9c98df" />
-
-
 
 #### 2. Configure Data Protection (Soft Delete): Protecting against accidental or malicious deletion. 
 
@@ -374,10 +313,7 @@ Set the retention policy to 7 days (sufficient for this project).
 
 Click Save at the top.
 
-
-
 <img width="1091" height="817" alt="image" src="https://github.com/user-attachments/assets/a07054d5-6a9e-43bd-a686-d598cccec712" />
-
 
 #### 3. Deploy Azure Key Vault: 
 
@@ -393,15 +329,11 @@ Pricing tier: Standard.
 
 Go to the Access configuration tab. 
 
-CRITICAL: Change the Permission model from Vault access policy to Azure role-based access control.
+- CRITICAL: Change the Permission model from Vault access policy to Azure role-based access control.
 
 Click Review + create, then Create.
 
-
-
 <img width="1092" height="506" alt="image" src="https://github.com/user-attachments/assets/7a381eba-afff-41e5-966c-13665ae491ab" />
-
-
 
 #### 4. Assign Key Vault RBAC Roles:
 
@@ -413,10 +345,7 @@ Click Add > Add role assignment.
 
 Search for the Key Vault Secrets Officer role (this allows creating and managing secrets). 
 
-
 <img width="1096" height="610" alt="image" src="https://github.com/user-attachments/assets/0f0bec36-0007-4c31-b293-27549f41b102" />
-
-
 
 Select it and click Next.
 
@@ -424,9 +353,7 @@ Under Members, click Select members, search for the sec-admin user, and select t
 
 Click Review + assign.
 
-
 <img width="1090" height="606" alt="image" src="https://github.com/user-attachments/assets/4bdd0e02-de2f-4ab6-86c3-aff14b0ae82b" />
-
 
 #### 5. Create a Test Secret:
 
@@ -445,29 +372,21 @@ Click Generate/Import.
 
 Click Create.
 
-
 <img width="1092" height="866" alt="image" src="https://github.com/user-attachments/assets/0dcac49d-03e1-4815-984a-33270df1efe0" />
-
-
 
 ---
 
-
-
 ### Stage 4: Enabling Visibility and Posture Management
 
-
-Objectives
+### Objectives
 
 - Deployed a centralized logging repository to collect audit trails, configured resources to forward logs, and enabled Cloud Security Posture Management to continuously assess the environment for misconfigurations.
 
-
-Architecture Overview
+### Architecture Overview
 
 - I created a Log Analytics Workspace (LAW-SecureCloud). Then went back to the Key Vault I built in Stage 3 and configure its "Diagnostic Settings" to forward all audit logs to this workspace. Finally, I activated the free foundational tier of Microsoft Defender for Cloud to scan my subscription and generate a Secure Score.
 
-
-Services Used
+### Services Used
 
 - Azure Log Analytics Workspace
 - Microsoft Defender for Cloud (Foundational CSPM)
@@ -484,10 +403,7 @@ Region: Choose the same region you have been using.
 
 Click Review + Create, then Create.
 
-
 <img width="1097" height="637" alt="image" src="https://github.com/user-attachments/assets/6c6c7a23-4492-43a9-8b0b-c715a236f814" />
-
-
 
 #### 2. Configure Diagnostic Settings for Key Vault:
 
@@ -507,10 +423,7 @@ Select your subscription and choose LAW-SecureCloud from the dropdown.
 
 Click Save at the top.
 
-
 <img width="1092" height="637" alt="image" src="https://github.com/user-attachments/assets/4d2c83fb-1077-4b51-a5c4-b1bd920c7c11" />
-
-
 
 #### 3. Generate Audit Logs:
 
@@ -521,9 +434,6 @@ Click on the DB-Password secret you made earlier.
 Click on the current version of the secret.
 
 Click Show Secret Value. (This action creates an audit event recording that your user account viewed the secret).
-
-
-
 
 #### 4. Onboard Defender for Cloud:
 
@@ -537,8 +447,6 @@ In the Defender plans page, look at the Foundational CSPM (Cloud Security Postur
 
 We will strictly use the Foundational/Free tier for this project—do not enable the paid Defender for Servers/Storage plans unless you are prepared for minor daily charges.
 
-
-
 Verification & Testing
 
 Verify Log Ingestion:
@@ -549,40 +457,27 @@ Under General, select Logs. (Close the starter query popup).
 
 In the query window, type the following Kusto Query Language (KQL) command:
 
-
 ```
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.KEYVAULT"
 ```
-
 <img width="1051" height="852" alt="image" src="https://github.com/user-attachments/assets/a698eead-213d-4546-899a-ff523df2cdbb" />
-
-
 
 You should see the audit logs generated when you viewed the secret.
 
-
-
 <img width="1917" height="860" alt="image" src="https://github.com/user-attachments/assets/be9b6321-a697-4750-9546-8109d571706d" />
-
-
 
 ---
 
+## Stage 5: SIEM Deployment and Incident Simulation
 
-
-### Stage 5: SIEM Deployment and Incident Simulation
-
-Objectives
+### Objectives
 
 - Deployed a Security Information and Event Management (SIEM) solution, created a custom detection rule using KQL, simulated a security event, then executed basic incident response workflows.
 
-
-Architecture Overview
+### Architecture Overview
 
 - Microsoft Sentinel does not store data itself; it sits on top of the Log Analytics Workspace (LAW-SecureCloud) I built in Stage 4. I activated Sentinel on that workspace. Then, I wrote a Analytics Rule that constantly scans the incoming AzureDiagnostics logs. If it sees an event where someone views your Key Vault secret, it fired an alert and generated an Incident ticket for me to investigate.
-
-
 
 #### 1. Onboard Microsoft Sentinel:
 
@@ -592,10 +487,7 @@ You will see a list of available workspaces. Select the LAW-SecureCloud workspac
 
 Click Add. Within a few moments, the Sentinel dashboard will load.
 
-
 <img width="952" height="867" alt="image" src="https://github.com/user-attachments/assets/33a91428-89a2-44a6-9a19-b2cb883dd3b7" />
-
-
 
 #### 2. Create a Custom Analytics Rule:
 
@@ -605,17 +497,19 @@ Click Create at the top, then select Scheduled query rule.
 
 General Tab:
 
-  Name: Key Vault Secret Accessed
+- Name: Key Vault Secret Accessed
   
-  Description: Detects when a user views the plain-text value of a Key Vault secret.
+- Description: Detects when a user views the plain-text value of a Key Vault secret.
   
-  Tactics: Select Credential Access.
+- Tactics: Select Credential Access.
   
-  Severity: Medium.
+- Severity: Medium.
   
-  Click Next.
+- Click Next.
 
-Set rule logic Tab:In the Rule query box, paste the following KQL command:
+Set rule logic Tab: 
+
+In the Rule query box, paste the following KQL command:
 
 ```
 kqlAzureDiagnostics
@@ -631,9 +525,7 @@ Incident settings Tab: Ensure Create incidents from alerts triggered by this ana
 
 Click Review + create, then click Save.
 
-
 <img width="955" height="865" alt="image" src="https://github.com/user-attachments/assets/255eeffe-d65d-4b26-9d8b-315a294ab1e9" />
-
 
 #### 3. Simulate the Attack:
 
@@ -645,10 +537,7 @@ Click the current version, then click Show Secret Value.
 
 This action generates the SecretGet event your new Sentinel rule is actively looking for.
 
-
 <img width="957" height="866" alt="image" src="https://github.com/user-attachments/assets/dbd8e552-122e-44a3-b542-23bfe180ce65" />
-
-
 
 #### 4. Investigate and Close the Incident:
 
@@ -670,11 +559,8 @@ Change the Status dropdown from New to Closed.
 
 Select the classification True Positive - Suspicious activity and add a comment: "Testing custom analytics rule. Confirmed alert fired successfully upon secret access."
 
-
 If the incident appears in the Sentinel queue and you are successfully able to close it with a classification, the SIEM pipeline is working flawlessly.
 
-
 <img width="956" height="865" alt="image" src="https://github.com/user-attachments/assets/f35f0b75-d8c4-4b40-81c5-c827cc1eb400" />
-
 
 <img width="956" height="861" alt="image" src="https://github.com/user-attachments/assets/1e94ae49-d980-4ffc-9f4d-fe11d54c8065" />
