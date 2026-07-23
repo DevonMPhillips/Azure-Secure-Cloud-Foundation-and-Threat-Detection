@@ -54,7 +54,11 @@ Designed, deployed, and secured a baseline Azure environment from the ground up.
 
 <br>
 
----
+
+# Project Walkthrough - Full
+
+Below are the detailed steps I've taken to complete this project.
+
 
 ### Project Roadmap
 
@@ -69,10 +73,6 @@ Designed, deployed, and secured a baseline Azure environment from the ground up.
 - Stage 5: SIEM Deployment and Incident Simulation. Deploying Microsoft Sentinel, generating a malicious event, and investigating the alert.
 
 <br>
-
-# Project Walkthrough - Full
-
-Below are the detailed steps I've taken to complete this project.
 
 <br>
 
@@ -233,7 +233,7 @@ Click **Review + create**, then **Create**.
 
 Search for Network security groups and click **Create**.
 
-Select your **RG-SecureCloud-Prod** resource group. Name the **NSG NSG-Web-Tier** and click **Create**.
+Select the **RG-SecureCloud-Prod** resource group. Name the **NSG NSG-Web-Tier** and click **Create**.
 
 Repeat this process to create a second NSG named **NSG-Database-Tier**.
 
@@ -350,7 +350,7 @@ Select your **RG-SecureCloud-Prod** resource group.
 
 **Storage account name**: This must be globally unique across all of Azure 
 
-**Region**: Choose the same region as your VNet.
+**Region**: Choose the same region as my VNet.
 
 **Performance**: Standard (keeps costs at zero). 
 
@@ -396,7 +396,7 @@ Select your **RG-SecureCloud-Prod** resource group.
 
 Key vault name: Must also be globally unique.
 
-Region: Same as your VNet. 
+Region: Same as my VNet. 
 
 Pricing tier: Standard.
 
@@ -442,9 +442,9 @@ Click **Review + assign.**
 
 #### 5. Create a Test Secret:
 
-Log in as the sec-admin user for this step, or assign the role to your current root account as well. 
+Log in as the sec-admin user for this step, or assign the role to my current root account as well. 
 
-In your Key Vault, select **Secrets** under Objects. 
+In the Key Vault, select **Secrets** under Objects. 
 
 Click **Generate/Import. **
 
@@ -649,9 +649,9 @@ Click **Review + create**, then click **Save**.
 
 #### 3. Simulate the Attack:
 
-Open a new tab and navigate back to your Key Vault.
+Open a new tab and navigate back to the Key Vault.
 
-Go to **Secrets** under Objects and click your DB-Password secret.
+Go to **Secrets** under Objects and click the DB-Password secret.
 
 Click the current version, then click **Show Secret Value.**
 
