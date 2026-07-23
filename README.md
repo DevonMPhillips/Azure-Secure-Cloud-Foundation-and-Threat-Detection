@@ -1,11 +1,15 @@
 # Azure-Secure-Cloud-Foundation-and-Threat-Detection
-To design, deploy, and secure a baseline Azure environment from the ground up. Implement robust identity controls, segment a virtual network, secure storage assets, and establish a continuous security monitoring and incident response baseline.
+
+Designed, deployed, and secured a baseline Azure environment from the ground up. Implementing identity controls, segmented virtual networks, secured storage assets, and established a continuous security monitoring and incident response baseline.
+
 
 ---
 
+
 **Major Phases**
 
-Identity & Access Management (IAM): Securing the human and non-human perimeter.
+
+Identity & Access Management: Securing the human and non-human perimeter.
 
 Network Security: Designing a segmented, firewalled virtual network.
 
@@ -15,28 +19,29 @@ Security Posture & Monitoring: Centralizing logs and evaluating compliance.
 
 Threat Detection & Response: Deploying a SIEM and simulating an attack.
 
-Documentation & Portfolio Assembly: Translating technical work into professional assets.
-
 
 ---
 
 
 **Technologies Used**
 
-Microsoft Entra ID (formerly Azure AD): Users, Groups, RBAC, Conditional Access/MFA.
 
-Azure Networking: Virtual Networks (VNet), Subnets, Network Security Groups (NSGs).
+Microsoft Entra ID: Users, Groups, RBAC, Conditional Access/MFA.
+
+Azure Networking: Virtual Networks, Subnets, Network Security Groups.
 
 Azure Storage & Key Vault: Blob storage, encryption, secrets management.
 
-Microsoft Defender for Cloud: Cloud Security Posture Management (CSPM), vulnerability assessments.
+Microsoft Defender for Cloud: Cloud Security Posture Management, vulnerability assessments.
 
-Microsoft Sentinel (SIEM): Log ingestion, Kusto Query Language (KQL), threat hunting.
+Microsoft Sentinel: Log ingestion, Kusto Query Language (KQL), threat hunting.
 
 
 ---
 
+
 **Skills Implemented**
+
 
 Implementing Principle of Least Privilege via Azure RBAC.
 
@@ -46,11 +51,12 @@ Securing cloud storage against public exposure and data exfiltration.
 
 Centralizing audit logs using Log Analytics Workspaces.
 
-Deploying and configuring a modern SIEM.
+Deploying and configuring a Microsoft Sentinel SIEM.
 
-Executing basic Incident Response workflows (Alert triage and investigation).
+Executing basic Incident Response workflows.
 
 Creating professional architecture diagrams and technical documentation.
+
 
 ---
 
@@ -58,59 +64,61 @@ Creating professional architecture diagrams and technical documentation.
 **Project Roadmap**
 
 
-Stage 1: Establishing the Identity Perimeter (Users, Groups, Custom RBAC Roles, and enforcing MFA).
+Stage 1: Establishing the Identity Perimeter. Users, Groups, Custom RBAC Roles, and enforcing MFA.
 
-Stage 2: Building a Defensible Network Architecture (VNet creation, isolating subnets, configuring NSGs, and verifying blocked traffic).
+Stage 2: Building a Defensible Network Architecture. VNet creation, isolating subnets, configuring NSGs, and verifying blocked traffic.
 
-Stage 3: Securing Data Assets (Deploying a Storage Account, disabling public access, configuring Key Vault, and setting up logging).
+Stage 3: Securing Data Assets. Deploying a Storage Account, disabling public access, configuring Key Vault, and setting up logging.
 
-Stage 4: Enabling Visibility and Posture Management (Setting up Log Analytics, onboarding Defender for Cloud, and reviewing security recommendations).
+Stage 4: Enabling Visibility and Posture Management. Setting up Log Analytics, onboarding Defender for Cloud, and reviewing security recommendations.
 
-Stage 5: SIEM Deployment and Incident Simulation (Deploying Microsoft Sentinel, generating a malicious event, and investigating the alert).
+Stage 5: SIEM Deployment and Incident Simulation. Deploying Microsoft Sentinel, generating a malicious event, and investigating the alert.
 
-Stage 6: Portfolio Polish (Finalizing diagrams, writing the README, and extracting resume bullets).
-
-
----
+## Walkthrough
 
 
-**Stage 1: Establishing the Identity Perimeter** 
-
+### Stage 1: Establishing the Identity Perimeter
 
 Objectives:
 
-Establish a secure identity foundation by creating isolated user accounts, organizing them into logical groups, applying the Principle of Least Privilege (PoLP) through role assignments, and enforcing Multi-Factor Authentication (MFA).
+- Establish a secure identity foundation by creating isolated user accounts, organizing them into logical groups, applying the Principle of Least Privilege through role assignments, and enforcing Multi-Factor Authentication.
 
 
-1. Create the Users:
-Log in to the Azure Portal using your root/free-tier account.Search for and navigate to Microsoft Entra ID.
+#### 1. Create the Users:
+
+
+Log in to the Azure Portal.
+
+Search for and navigate to Microsoft Entra ID.
 
 Under the Manage menu, select Users > All users > New user > Create new user.
 
-Create a user named sec-admin (e.g., User principal name: sec-admin@yourtenant.onmicrosoft.com). 
+Create a user named sec-admin (User principal name: sec-admin@mytenant.onmicrosoft.com). 
 
 Set a secure password and copy it down. 
 
-Repeat the process to create a second user named auditor.
+I will repeat the process to create a second user named auditor.
 
 
 <img width="952" height="612" alt="image" src="https://github.com/user-attachments/assets/fb83449a-c09d-470b-bbb8-55e75dec1b7b" />
 
 
-CLI:
-[az ad user create --display-name "auditor" --user-principal-name "auditor@devonphillips211gmail.onmicrosoft.com" --password "[SECRETPASSWORD]"]
-
-
 <img width="1001" height="277" alt="image" src="https://github.com/user-attachments/assets/accebb81-a8fd-4eaa-9dfb-17974abb9d2e" />
 
 
-2. Create Security Groups: Always assign roles to groups, not individual users.
+
+#### 2. Create Security Groups: 
+
 
 Navigate back to the Entra ID overview and select Groups > New group.
+
 Group type: Security.
+
 Group name: Cloud-Security-Admins. Leave membership type as Assigned.
-Under Members, add your sec-admin user. Click Create.
-Create a second group named Security-Auditors and add your auditor user to it.
+
+Under Members, add the sec-admin user. Click Create.
+
+Create a second group named Auditors and add the auditor user to it.
 
 
 <img width="1001" height="627" alt="image" src="https://github.com/user-attachments/assets/6457737a-ff15-4dd4-89fe-872eaa472b48" />
@@ -119,17 +127,27 @@ Create a second group named Security-Auditors and add your auditor user to it.
 <img width="1257" height="635" alt="image" src="https://github.com/user-attachments/assets/a27c4079-33b6-4e5e-a224-9ea2715dcbfd" />
 
 
-az ad group create --display-name Auditor --mail-nickname Auditor
+
+CLI:
+[az ad group create --display-name Auditor --mail-nickname Auditor]
+
 <img width="1032" height="626" alt="image" src="https://github.com/user-attachments/assets/604c268e-1c75-4d29-b6ea-0e5d0f933380" />
+
 
 <img width="1090" height="670" alt="image" src="https://github.com/user-attachments/assets/3ee2894f-3586-4c42-9729-dc1bac6e9f73" />
 
 
 
-3. Assign Entra ID Roles: Granting tenant-level permissions.
+#### 3. Assign Entra ID Roles: Granting tenant-level permissions.
+
 
 In Entra ID, go to Roles and administrators. 
-Search for the Global Reader role. Click on it, select Add assignments, and assign it to the Security-Auditors group. (This allows them to view identity settings but change nothing). Search for the Security Administrator role and assign it to the Cloud-Security-Admins group.
+
+Search for the Global Reader role. 
+
+Click on it, select Add assignments, and assign it to the Security-Auditors group. 
+
+Search for the Security Administrator role and assign it to the Cloud-Security-Admins group.
 
 
 
@@ -140,13 +158,14 @@ Search for the Global Reader role. Click on it, select Add assignments, and assi
 
 
 
-4. Enforce Multi-Factor Authentication: Using Security Defaults to keep costs at zero. (Note: Conditional Access policies are the enterprise standard, but require a paid Premium P1 license. We will use Security Defaults, Microsoft's free baseline).
+#### 4. Enforce Multi-Factor Authentication. 
+
 
 In the Entra ID overview menu, scroll down to Properties.
 
-At the bottom of the page, click the link for Manage security defaults. Ensure the toggle is set to Enabled. (If it prompts you to disable classic policies, accept it).
+At the bottom of the page, click the link for Manage security defaults. Ensure the toggle is set to Enabled.
 
-Click Save. All users in the tenant are now required to register for MFA using the Microsoft Authenticator app.
+Click Save. Now all users in the tenant are now required to register for MFA using the Microsoft Authenticator app.
 
 
 <img width="1092" height="862" alt="image" src="https://github.com/user-attachments/assets/148b134c-bb2c-4ec9-89eb-32ae9fc9b7cb" />
@@ -155,29 +174,27 @@ Click Save. All users in the tenant are now required to register for MFA using t
 ---
 
 
-**Stage 2: Building a Defensible Network Architecture**
-
-Objectives
-
-Design a secure network foundation by deploying an Azure Virtual Network (VNet), segmenting it into public-facing and private tiers, and implementing strict traffic control using Network Security Groups (NSGs).
-
-Skills Being Learned
-Micro-segmentation: Dividing a network into isolated subnets based on resource function.
-
-Stateful Firewall Rules: Configuring NSGs to allow only specific, necessary traffic (Principle of Least Privilege at the network layer).
-
-Cloud Routing Basics: Understanding how traffic flows by default within an Azure VNet and how to restrict it.
-
-Architecture Overview
-You will build a classic "Two-Tier" architecture. You will create a VNet (VNet-Core) containing two subnets: Subnet-Web (for simulated public-facing web servers) and Subnet-Database (for simulated backend data servers).
-
-You will then attach an NSG to each subnet. The Web NSG will only allow HTTP/HTTPS from the internet. The Database NSG will completely block the internet and only accept traffic originating from the Web subnet.
-
-Services Used
-Azure Resource Groups, Azure Virtual Networks (VNet), Azure Network Security Groups (NSG)
+### Stage 2: Building a Defensible Network Architecture
 
 
-1. Create a Resource Group: The logical container for your project.
+Objectives:
+
+- Designed a secure network foundation by deploying an Azure Virtual Network, segmenting it into public-facing and private tiers, and implementing strict traffic control using Network Security Groups.
+
+
+Architecture Overview:
+
+I built a Two-Tier architecture. I will created a VNet containing two subnets: Subnet-Web for simulated public-facing web servers and Subnet-Database for simulated backend data servers.
+
+I then attach an NSG to each subnet. The Web NSG will only allow HTTP/HTTPS from the internet. The Database NSG will completely block the internet and only accept traffic originating from the Web subnet.
+
+
+Services Used:
+
+Azure Resource Groups, Azure Virtual Networks, Azure Network Security Groups
+
+
+#### 1. Create a Resource Group:
 
 In the Azure Portal, search for Resource groups. Click Create.
 
@@ -188,14 +205,10 @@ Select a region close to you (e.g., East US).
 Click Review + create, then Create.
 
 
-CLI:
-[az group create -l centralus -n RG-SecureCloud-Prod]
-
-
 <img width="720" height="215" alt="image" src="https://github.com/user-attachments/assets/9edd6436-cab5-4f58-8463-56b97cf325f4" />
 
 
-2. Deploy the Virtual Network and Subnets: Carving out your private IP space.
+#### 2. Deploy the Virtual Network and Subnets:
 
 Search for Virtual Networks and click Create.
 
@@ -213,14 +226,6 @@ Click Add subnet again. Name it Subnet-Database with an address range of 10.0.2.
 Click Review + create, then Create.
 
 
-CLI:
-[az network vnet create -n VNET-Core --resource-group RG-SecureCloud-Prod --subnet-name Subnet-Web --subnet-prefixes 10.0.1.0/24 && az network vnet subnet create --vnet-name VNET-Core -g RG-SecureCloud-Prod -n Subnet-Database --address-prefixes 10.0.2.0/24]
-
-
-Verify:
-[az network vnet subnet list --resource-group RG-SecureCloud-Prod --vnet-name VNET-Core --output table]
-
-
 <img width="1917" height="772" alt="image" src="https://github.com/user-attachments/assets/c7c49144-0a38-46af-88a8-482f1e400b97" />
 
 
@@ -230,7 +235,7 @@ Verify:
 <img width="1241" height="97" alt="image" src="https://github.com/user-attachments/assets/156a8786-150b-4945-bd25-2d5a26c89a9d" />
 
 
-3. Create Network Security Groups: Creating the boundary firewalls.
+#### 3. Create Network Security Groups: Creating the boundary firewalls.
 
 Search for Network security groups and click Create.
 
@@ -239,24 +244,23 @@ Select your RG-SecureCloud-Prod resource group. Name the NSG NSG-Web-Tier and cl
 Repeat this process to create a second NSG named NSG-Database-Tier.
 
 
-CLI:
-[az network nsg create --resource-group RG-SecureCloud-Prod --name NSG-Web-Tier --location centralus && az network nsg create --resource-group RG-SecureCloud-Prod --name NSG-Database-Tier --location centralus]
 
-
-4. Configure Security Rules: Applying Least Privilege to network traffic. 
+#### 4. Configure Security Rules: Applying Least Privilege to network traffic. 
 
 Navigate to NSG-Web-Tier. Under Settings, click Inbound security rules. 
 
 Add a rule to allow HTTPS: 
-  Source: AnySource 
-  port ranges: *
-  Destination: 
-  AnyService: HTTPS (Port 443)
-  Action: Allow
-  Priority: 100
-  Name: Allow-HTTPS-Inbound
-  Navigate to NSG-Database-Tier.
 
+| Property | Configuration | Purpose |
+|---|---|---|
+| Rule Name | Allow-HTTPS-Inbound | Identifies the purpose of the security rule |
+| Source | Any | Allows inbound HTTPS requests from external sources |
+| Source Port Range | * | Allows traffic from any originating port |
+| Destination | Any | Applies rule to all resources associated with the NSG |
+| Destination Port | 443 (HTTPS) | Allows secure web traffic using HTTPS protocol |
+| Protocol | TCP | HTTPS communication uses TCP |
+| Action | Allow | Permits HTTPS inbound connections |
+| Priority | 100 | Determines rule processing order (lower numbers take priority) |
 
 <img width="1092" height="827" alt="image" src="https://github.com/user-attachments/assets/335402fc-7530-415a-8afc-144658017423" />
 
@@ -291,7 +295,7 @@ Source: VirtualNetwork
 <img width="1091" height="865" alt="image" src="https://github.com/user-attachments/assets/f5b801c2-ff2f-4af5-8aac-d178fc546273" />
 
 
-5. Associate NSGs to Subnets: Binding the firewalls to the network segments.
+#### 5. Associate NSGs to Subnets: Binding the firewalls to the network segments.
 
 While still in NSG-Database-Tier, click Subnets under Settings.
 
@@ -317,11 +321,11 @@ CLI:
 ---
 
 
-**Stage 3: Securing Data Assets** 
+### Stage 3: Securing Data Assets
 
 Objectives
 
-Deploy a cloud storage solution and a secrets management vault, hardening both against unauthorized access, public exposure, and accidental data loss
+- Deploy a cloud storage solution and a secrets management vault, hardening both against unauthorized access, public exposure, and accidental data loss
 
 
 
@@ -459,12 +463,12 @@ Click Create.
 ---
 
 
-**Stage 4: Enabling Visibility and Posture Management**
+### Stage 4: Enabling Visibility and Posture Management
 
 
 Objectives
 
-Deploy a centralized logging repository to collect audit trails, configure resources to forward their logs, and enable Cloud Security Posture Management (CSPM) to continuously assess the environment for misconfigurations.
+- Deploy a centralized logging repository to collect audit trails, configure resources to forward their logs, and enable Cloud Security Posture Management (CSPM) to continuously assess the environment for misconfigurations.
 
 
 Architecture Overview
@@ -494,7 +498,7 @@ Click Review + Create, then Create.
 
 
 CLI: 
-[az monitor log-analytics workspace create --resource-group RG-SecureCloud-Prod --workspace-name LAW-SecureCloud --location centralus]
+'''az monitor log-analytics workspace create --resource-group RG-SecureCloud-Prod --workspace-name LAW-SecureCloud --location centralus'''
 
 
 
@@ -577,11 +581,11 @@ You should see the audit logs generated when you viewed the secret.
 
 ---
 
-**Stage 5: SIEM Deployment and Incident Simulation** 
+### Stage 5: SIEM Deployment and Incident Simulation
 
 Objectives
 
-Deploy a Security Information and Event Management (SIEM) solution, create a custom detection rule using KQL, simulate a security event, and execute basic incident response workflows.
+- Deploy a Security Information and Event Management (SIEM) solution, create a custom detection rule using KQL, simulate a security event, and execute basic incident response workflows.
 
 
 Architecture Overview
