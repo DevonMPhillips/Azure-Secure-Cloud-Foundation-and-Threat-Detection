@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# Purpose:
+# Creates Azure Entra ID security groups for department-based RBAC.
+
+# Create Entra ID sec-admin user
+az ad user create \
+  --display-name "sec-admin" \
+  --user-principal-name "sec-admin@devonphillips211gmail.onmicrosoft.com" \
+  --password "[SECRETPASSWORD]"
+
+# Create Entra ID auditor user
+az ad user create \
+  --display-name "auditor" \
+  --user-principal-name "auditor@devonphillips211gmail.onmicrosoft.com" \
+  --password "[SECRETPASSWORD]"
+
+# Create Auditor Security Group
+az ad group create --display-name Auditor \
+  --mail-nickname Auditor
+
+# Create Security Admin Security Group
+az ad group create --display-name Cloud-Security-Admins \
+  --mail-nickname Security-Admins
+
+# Add assignments to Security groups
+
+# Create a Resource Group
+az group create -l centralus \
+  -n RG-SecureCloud-Prod
+
+# Deploy the Virtual Network and Subnets
+az network vnet create -n VNET-Core \
+  --resource-group RG-SecureCloud-Prod \ 
+  --subnet-name Subnet-Web \
+  --subnet-prefixes 10.0.1.0/24 \ 
+  && az network vnet subnet create --vnet-name VNET-Core \
+  -g RG-SecureCloud-Prod \
+  -n Subnet-Database \ 
+  --address-prefixes 10.0.2.0/24
+
+# Verify 
+# az network vnet subnet list --resource-group RG-SecureCloud-Prod \  
+  --vnet-name VNET-Core --output table
+
+
+# Create Network Security Groups
+
+az network nsg create --resource-group RG-SecureCloud-Prod \ 
+  --name NSG-Web-Tier \
+  --location centralus \ 
+  && az network nsg create --resource-group \
+  RG-SecureCloud-Prod --name NSG-Database-Tier \
+  --location centralus
+
+# Associate NSGs to Subnets
+az network vnet subnet update --resource-group RG-SecureCloud-Prod \
+  --vnet-name VNET-Core \
+  --name Subnet-Web \
+  --network-security-group NSG-Web-Tier
+
+# list of Azure CLI CMDs ran
+
+# Deploy a Hardened Storage Account
+az storage account create -n securestoredmp \
+  -g RG-SecureCloud-Prod \
+  -l centralus \
+  --sku Standard_LRS \
+  --https-only true \
+  --allow-blob-public-access false \
+  --min-tls-version TLS1_2
+
+# Configure Data Protection
+az storage account blob-service-properties update --resource-group RG-SecureCloud-Prod \
+  --account-name securestoredmp \
+  --enable-delete-retention true \
+  --delete-retention-days 7
+
+# Verify
+az storage account blob-service-properties show --resource-group RG-SecureCloud-Prod \
+  --account-name securestoredmp \
+  --output jsonc]
+
+# Deploy Azure Key Vault
+az keyvault create --name kv-secureapp-dmp \
+  --resource-group RG-SecureCloud-Prod \
+  --location centralus \
+  --sku standard \
+  --enable-rbac-authorization true]
+
+# Verify
+az keyvault show --name kv-secureapp-dmp \
+  --resource-group RG-SecureCloud-Prod \
+  --output jsonc]
+
+# Create a Log Analytics Workspace
+az monitor log-analytics workspace create --resource-group RG-SecureCloud-Prod \
+  --workspace-name LAW-SecureCloud \
+  --location centralus
