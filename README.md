@@ -237,9 +237,13 @@ Select your **RG-SecureCloud-Prod** resource group. Name the **NSG NSG-Web-Tier*
 
 Repeat this process to create a second NSG named **NSG-Database-Tier**.
 
+<br>
+
 #### 4. Configure Security Rules: Applying Least Privilege to network traffic. 
 
 Navigate to NSG-Web-Tier. Under Settings, click **Inbound security rules.** 
+
+<br>
 
 Add a rule to allow HTTPS: 
 
@@ -258,11 +262,14 @@ Add a rule to allow HTTPS:
 
 <img width="1092" height="827" alt="image" src="https://github.com/user-attachments/assets/335402fc-7530-415a-8afc-144658017423" />
 
+
 <br>
 
 Go to Inbound security rules.
 
 **Add** a rule to only **allow** traffic from the Web Subnet:
+
+<br>
 
 | Property | Configuration | Purpose |
 |---|---|---|
@@ -282,6 +289,8 @@ Go to Inbound security rules.
 <br>
 
 **Add** a second rule to explicitly **deny** all other VNet traffic to the database:
+
+<br>
 
 | Property | Configuration | Purpose |
 |---|---|---|
@@ -308,14 +317,18 @@ While still in NSG-Database-Tier, click Subnets under Settings.
 Click **Associate**, select **VNet-Core**, and select **Subnet-Database**.
 
 Navigate back to NSG-Web-Tier, click **Subnets**, and associate it with **Subnet-Web.**
+
+<br>
   
 <img width="1091" height="862" alt="image" src="https://github.com/user-attachments/assets/30bf0216-92a5-43f0-9cc0-ec0cc21f5363" />
 
+<br>
+
 <img width="1095" height="335" alt="image" src="https://github.com/user-attachments/assets/480f9b8f-a572-4d7e-8150-a29715658cf9" />
 
-<img width="1092" height="862" alt="image" src="https://github.com/user-attachments/assets/c41d0540-0b90-4005-8314-5cf77e425962" />
+<br>
 
----
+<img width="1092" height="862" alt="image" src="https://github.com/user-attachments/assets/c41d0540-0b90-4005-8314-5cf77e425962" />
 
 <br>
 
@@ -351,7 +364,11 @@ Minimum TLS version: Version 1.2.
 
 Click Review, then Create.
 
+<br>
+
 <img width="1095" height="615" alt="image" src="https://github.com/user-attachments/assets/b7db723d-0601-447a-ae3c-10fd5e9c98df" />
+
+<br>
 
 #### 2. Configure Data Protection (Soft Delete): Protecting against accidental or malicious deletion. 
 
@@ -365,7 +382,11 @@ Set the retention policy to **7 days** (sufficient for this project).
 
 Click **Save** at the top.
 
+<br>
+
 <img width="1091" height="817" alt="image" src="https://github.com/user-attachments/assets/a07054d5-6a9e-43bd-a686-d598cccec712" />
+
+<br>
 
 #### 3. Deploy Azure Key Vault: 
 
@@ -385,7 +406,11 @@ Go to the Access configuration tab.
 
 Click **Review + create**, then **Create.**
 
+<br>
+
 <img width="1092" height="506" alt="image" src="https://github.com/user-attachments/assets/7a381eba-afff-41e5-966c-13665ae491ab" />
+
+<br>
 
 #### 4. Assign Key Vault RBAC Roles:
 
@@ -397,7 +422,11 @@ Click **Add** > **Add role assignment.**
 
 Search for the Key Vault Secrets Officer role (this allows creating and managing secrets). 
 
+<br>
+
 <img width="1096" height="610" alt="image" src="https://github.com/user-attachments/assets/0f0bec36-0007-4c31-b293-27549f41b102" />
+
+<br>
 
 Select it and click **Next.**
 
@@ -405,7 +434,11 @@ Under Members, click **Select members**, search for the **sec-admin user**, and 
 
 Click **Review + assign.**
 
+<br>
+
 <img width="1090" height="606" alt="image" src="https://github.com/user-attachments/assets/4bdd0e02-de2f-4ab6-86c3-aff14b0ae82b" />
+
+<br>
 
 #### 5. Create a Test Secret:
 
@@ -417,6 +450,8 @@ Click **Generate/Import. **
 
 ## Azure Key Vault Secret
 
+<br>
+
 | Property | Configuration |
 |---|---|
 | Secret Name | DB-Password |
@@ -424,9 +459,11 @@ Click **Generate/Import. **
 
 Click **Create.**
 
+<br>
+
 <img width="1092" height="866" alt="image" src="https://github.com/user-attachments/assets/0dcac49d-03e1-4815-984a-33270df1efe0" />
 
----
+<br>
 
 ### Stage 4: Enabling Visibility and Posture Management
 
@@ -581,9 +618,13 @@ General Tab:
   
 - Click Next.
 
+<br>
+
 Set rule logic Tab: 
 
 In the Rule query box, paste the following KQL command:
+
+<br>
 
 ```
 kqlAzureDiagnostics
