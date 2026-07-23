@@ -1,4 +1,4 @@
-# Azure-Secure-Cloud-Foundation-and-Threat-Detection
+# Azure Secure Cloud Foundation and Threat Detection
 
 Designed, deployed, and secured a baseline Azure environment from the ground up. Implementing identity controls, segmented virtual networks, secured storage assets, and established a continuous security monitoring and incident response baseline.
 
@@ -126,10 +126,6 @@ Create a second group named Auditors and add the auditor user to it.
 
 <img width="1257" height="635" alt="image" src="https://github.com/user-attachments/assets/a27c4079-33b6-4e5e-a224-9ea2715dcbfd" />
 
-
-
-CLI:
-[az ad group create --display-name Auditor --mail-nickname Auditor]
 
 <img width="1032" height="626" alt="image" src="https://github.com/user-attachments/assets/604c268e-1c75-4d29-b6ea-0e5d0f933380" />
 
@@ -268,29 +264,35 @@ Add a rule to allow HTTPS:
 Go to Inbound security rules.
 
 Add a rule to only allow traffic from the Web Subnet:
-  Source: IP Addresses -> 10.0.1.0/24 (This is your Web Subnet)
-  Source port ranges: *
-  Destination: Any
-  Destination port ranges: 1433 (Standard SQL port)
-  Action: Allow
-  Priority: 110
-  Name: Allow-SQL-From-Web
+
+|---|---|---|
+| Rule Name | Allow-SQL-From-Web | Identifies the purpose of the network security rule |
+| Source | IP Address: 10.0.1.0/24 (Web Subnet) | Restricts SQL access to only approved web-tier resources |
+| Source Port Range | * | Allows connections from any originating port |
+| Destination | Any | Applies the rule to resources protected by the NSG |
+| Destination Port Range | 1433 (SQL Server) | Allows Microsoft SQL Server communication |
+| Protocol | TCP | SQL Server uses TCP for database communication |
+| Action | Allow | Permits approved database connections |
+| Priority | 110 | Evaluated before broader deny rules |
 
 
 <img width="1092" height="861" alt="image" src="https://github.com/user-attachments/assets/2892e18d-75b5-4d87-8300-1e9edf5283f4" />
 
 
-Add a second rule to explicitly deny all other VNet traffic to the database (Azure allows all VNet-to-VNet traffic by default):
+Add a second rule to explicitly deny all other VNet traffic to the database:
 
-Source: VirtualNetwork
 
-  Source port ranges: *
-  Destination: Any
-  Destination port ranges: *
-  Action: Deny
-  Priority: 4000 (Must be higher than the default allow rules but lower priority than your      SQL allow rule)
-  Name: Deny-Other-VNet-Traffic
-
+| Property | Configuration | Purpose |
+|---|---|---|
+| Rule Name | Deny-Other-VNet-Traffic | Identifies the purpose of the network security rule |
+| Source | VirtualNetwork | Applies the rule to traffic originating from resources within the virtual network |
+| Source Port Range | * | Applies to traffic from any source port |
+| Destination | Any | Applies to all resources protected by the NSG |
+| Destination Port Range | * | Applies to all destination ports |
+| Protocol | Any | Applies to all network protocols |
+| Action | Deny | Blocks unauthorized network communication |
+| Priority | 4000 | Evaluated after specific allow rules but before default NSG rules |
+| Network Security Group | NSG-Database-Tier | Applies segmentation controls to the database tier |
 
 <img width="1091" height="865" alt="image" src="https://github.com/user-attachments/assets/f5b801c2-ff2f-4af5-8aac-d178fc546273" />
 
@@ -307,10 +309,6 @@ Navigate back to NSG-Web-Tier, click Subnets, and associate it with Subnet-Web.
 <img width="1091" height="862" alt="image" src="https://github.com/user-attachments/assets/30bf0216-92a5-43f0-9cc0-ec0cc21f5363" />
 
 
-CLI:
-[az network vnet subnet update --resource-group RG-SecureCloud-Prod --vnet-name VNET-Core --name Subnet-Web --network-security-group NSG-Web-Tier]
-
-
 <img width="1095" height="335" alt="image" src="https://github.com/user-attachments/assets/480f9b8f-a572-4d7e-8150-a29715658cf9" />
 
 
@@ -321,29 +319,34 @@ CLI:
 ---
 
 
+
 ### Stage 3: Securing Data Assets
 
 Objectives
 
-- Deploy a cloud storage solution and a secrets management vault, hardening both against unauthorized access, public exposure, and accidental data loss
+- Deployed a cloud storage solution and a secrets management vault, hardening both against unauthorized access, public exposure, and accidental data loss
 
 
 
 Architecture Overview
 
-You will deploy an Azure Storage Account simulating where your web application stores user uploads. You will explicitly block all anonymous public access and enable retention policies to recover deleted data. Then, you will deploy an Azure Key Vault to act as a secure safe for the application's database credentials, using modern Azure RBAC to control who can view the secrets.
+I deployed an Azure Storage Account simulating where my web application stored user uploads. I then  explicitly blocked all anonymous public access and enable retention policies to recover deleted data. Then, I deployed an Azure Key Vault to act as a secure safe for the application's database credentials, using Azure RBAC to control who can view the secrets.
 
-1. Deploy a Hardened Storage Account: Creating a secure-by-default storage bucket. In the Azure Portal, search for Storage accounts and click Create.
+
+
+#### 1. Deploy a Hardened Storage Account:
+
+In the Azure Portal, search for Storage accounts and click Create.
 
 Select your RG-SecureCloud-Prod resource group. 
 
-Storage account name: This must be globally unique across all of Azure 
+**Storage account name**: This must be globally unique across all of Azure 
 
-Region: Choose the same region as your VNet.
+**Region**: Choose the same region as your VNet.
 
-Performance: Standard (keeps costs at zero). 
+**Performance**: Standard (keeps costs at zero). 
 
-Redundancy: Locally-redundant storage (LRS).
+**Redundancy**: Locally-redundant storage (LRS).
 
 Go to the Advanced tab. Ensure Require secure transfer for REST API operations is checked. 
 
@@ -354,16 +357,12 @@ Minimum TLS version: Version 1.2.
 Click Review, then Create.
 
 
-CLI:
-[az storage account create -n securestoredmp -g RG-SecureCloud-Prod -l centralus --sku Standard_LRS --https-only true --allow-blob-public-access false --min-tls-version TLS1_2]
-
-
 
 <img width="1095" height="615" alt="image" src="https://github.com/user-attachments/assets/b7db723d-0601-447a-ae3c-10fd5e9c98df" />
 
 
 
-2. Configure Data Protection (Soft Delete): Protecting against accidental or malicious deletion. 
+#### 2. Configure Data Protection (Soft Delete): Protecting against accidental or malicious deletion. 
 
 Once the Storage Account deploys, navigate to it. 
 
@@ -371,23 +370,16 @@ In the left menu under Data management, select Data protection.
 
 Under Recovery, ensure Enable soft delete for blobs and Enable soft delete for containers are both checked.
 
-Set the retention policy to 7 days (sufficient for our project).
+Set the retention policy to 7 days (sufficient for this project).
 
 Click Save at the top.
 
-
-CLI:
-[az storage account blob-service-properties update --resource-group RG-SecureCloud-Prod --account-name securestoredmp --enable-delete-retention true --delete-retention-days 7]
-
-
-Verify: 
-[az storage account blob-service-properties show --resource-group RG-SecureCloud-Prod --account-name securestoredmp --output jsonc]
 
 
 <img width="1091" height="817" alt="image" src="https://github.com/user-attachments/assets/a07054d5-6a9e-43bd-a686-d598cccec712" />
 
 
-3. Deploy Azure Key Vault: Centralizing sensitive credentials. 
+#### 3. Deploy Azure Key Vault: 
 
 Search for Key vaults and click Create. 
 
@@ -401,24 +393,17 @@ Pricing tier: Standard.
 
 Go to the Access configuration tab. 
 
-CRITICAL: Change the Permission model from Vault access policy to Azure role-based access control (recommended). This is the modern standard for Azure security. 
+CRITICAL: Change the Permission model from Vault access policy to Azure role-based access control.
 
 Click Review + create, then Create.
 
-
-CLI:
-[az keyvault create --name kv-secureapp-dmp --resource-group RG-SecureCloud-Prod --location centralus --sku standard --enable-rbac-authorization true]
-
-
-Verify:
-[az keyvault show --name kv-secureapp-dmp --resource-group RG-SecureCloud-Prod --output jsonc]
 
 
 <img width="1092" height="506" alt="image" src="https://github.com/user-attachments/assets/7a381eba-afff-41e5-966c-13665ae491ab" />
 
 
 
-4. Assign Key Vault RBAC Roles: Managing data-plane access to secrets.
+#### 4. Assign Key Vault RBAC Roles:
 
 Navigate to your newly created Key Vault.
 
@@ -435,7 +420,7 @@ Search for the Key Vault Secrets Officer role (this allows creating and managing
 
 Select it and click Next.
 
-Under Members, click Select members, search for your sec-admin user, and select them.
+Under Members, click Select members, search for the sec-admin user, and select them.
 
 Click Review + assign.
 
@@ -443,16 +428,20 @@ Click Review + assign.
 <img width="1090" height="606" alt="image" src="https://github.com/user-attachments/assets/4bdd0e02-de2f-4ab6-86c3-aff14b0ae82b" />
 
 
-5. Create a Test Secret: Testing the vault functionality.
+#### 5. Create a Test Secret:
 
-Make sure you are logged in as the sec-admin user for this step, or assign the role to your current root account as well. 
+Log in as the sec-admin user for this step, or assign the role to your current root account as well. 
 
 In your Key Vault, select Secrets under Objects. 
 
 Click Generate/Import. 
 
-Name: DB-Password. 
-Secret value: SuperSecretP@ssw0rd123! (or any test password). 
+## Azure Key Vault Secret
+
+| Property | Configuration |
+|---|---|
+| Secret Name | DB-Password |
+| Secret Value | `<Replace-With-Test-Password>` |
 
 Click Create.
 
@@ -460,7 +449,9 @@ Click Create.
 <img width="1092" height="866" alt="image" src="https://github.com/user-attachments/assets/0dcac49d-03e1-4815-984a-33270df1efe0" />
 
 
+
 ---
+
 
 
 ### Stage 4: Enabling Visibility and Posture Management
@@ -468,12 +459,12 @@ Click Create.
 
 Objectives
 
-- Deploy a centralized logging repository to collect audit trails, configure resources to forward their logs, and enable Cloud Security Posture Management (CSPM) to continuously assess the environment for misconfigurations.
+- Deployed a centralized logging repository to collect audit trails, configured resources to forward logs, and enabled Cloud Security Posture Management to continuously assess the environment for misconfigurations.
 
 
 Architecture Overview
 
-You will create a Log Analytics Workspace (LAW-SecureCloud). You will then go back to the Key Vault you built in Stage 3 and configure its "Diagnostic Settings" to forward all audit logs to this workspace. Finally, you will activate the free foundational tier of Microsoft Defender for Cloud to scan your subscription and generate a Secure Score.
+- I created a Log Analytics Workspace (LAW-SecureCloud). Then went back to the Key Vault I built in Stage 3 and configure its "Diagnostic Settings" to forward all audit logs to this workspace. Finally, I activated the free foundational tier of Microsoft Defender for Cloud to scan my subscription and generate a Secure Score.
 
 
 Services Used
@@ -481,7 +472,7 @@ Services Used
 - Azure Log Analytics Workspace
 - Microsoft Defender for Cloud (Foundational CSPM)
 
-1. Create a Log Analytics Workspace: Deploying the data engine for Azure security.
+#### 1. Create a Log Analytics Workspace:
 
 In the Azure Portal, search for Log Analytics workspaces and click Create. 
 
@@ -497,13 +488,8 @@ Click Review + Create, then Create.
 <img width="1097" height="637" alt="image" src="https://github.com/user-attachments/assets/6c6c7a23-4492-43a9-8b0b-c715a236f814" />
 
 
-CLI: 
-'''az monitor log-analytics workspace create --resource-group RG-SecureCloud-Prod --workspace-name LAW-SecureCloud --location centralus'''
 
-
-
-
-2. Configure Diagnostic Settings for Key Vault: Telling resources where to send their audit trails.
+#### 2. Configure Diagnostic Settings for Key Vault:
 
 Navigate back to your Key Vault (kv-secureapp-dmp).
 
@@ -526,7 +512,7 @@ Click Save at the top.
 
 
 
-3. Generate Audit Logs: Generating telemetry for testing.
+#### 3. Generate Audit Logs:
 
 While still in the Key Vault, go to Secrets under Objects.
 
@@ -539,7 +525,7 @@ Click Show Secret Value. (This action creates an audit event recording that your
 
 
 
-4. Onboard Defender for Cloud: Enabling continuous compliance scanning.
+#### 4. Onboard Defender for Cloud:
 
 Search for Microsoft Defender for Cloud in the top search bar.
 
@@ -564,8 +550,10 @@ Under General, select Logs. (Close the starter query popup).
 In the query window, type the following Kusto Query Language (KQL) command:
 
 
+```
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.KEYVAULT"
+```
 
 <img width="1051" height="852" alt="image" src="https://github.com/user-attachments/assets/a698eead-213d-4546-899a-ff523df2cdbb" />
 
@@ -581,20 +569,22 @@ You should see the audit logs generated when you viewed the secret.
 
 ---
 
+
+
 ### Stage 5: SIEM Deployment and Incident Simulation
 
 Objectives
 
-- Deploy a Security Information and Event Management (SIEM) solution, create a custom detection rule using KQL, simulate a security event, and execute basic incident response workflows.
+- Deployed a Security Information and Event Management (SIEM) solution, created a custom detection rule using KQL, simulated a security event, then executed basic incident response workflows.
 
 
 Architecture Overview
 
-Microsoft Sentinel does not store data itself; it sits on top of the Log Analytics Workspace (LAW-SecureCloud) you built in Stage 4. You will activate Sentinel on that workspace. Then, you will write an Analytics Rule that constantly scans the incoming AzureDiagnostics logs. If it sees an event where someone views your Key Vault secret, it will fire an alert and generate an Incident ticket for you to investigate.
+- Microsoft Sentinel does not store data itself; it sits on top of the Log Analytics Workspace (LAW-SecureCloud) I built in Stage 4. I activated Sentinel on that workspace. Then, I wrote a Analytics Rule that constantly scans the incoming AzureDiagnostics logs. If it sees an event where someone views your Key Vault secret, it fired an alert and generated an Incident ticket for me to investigate.
 
 
 
-1. Onboard Microsoft Sentinel: Activating the SIEM on top of your logging data.
+#### 1. Onboard Microsoft Sentinel:
 
 In the Azure Portal search bar, type Microsoft Sentinel and select it. Click Create (or Add).
 
@@ -607,7 +597,7 @@ Click Add. Within a few moments, the Sentinel dashboard will load.
 
 
 
-2. Create a Custom Analytics Rule: Turning raw logs into actionable alerts.
+#### 2. Create a Custom Analytics Rule:
 
 In the Microsoft Sentinel left menu, under Configuration, click Analytics.
 
@@ -627,9 +617,11 @@ General Tab:
 
 Set rule logic Tab:In the Rule query box, paste the following KQL command:
 
-  kqlAzureDiagnostics
+```
+kqlAzureDiagnostics
   | where ResourceProvider == "MICROSOFT.KEYVAULT"
   | where OperationName == "SecretGet"
+```
   
 Scroll down to Query scheduling. Set Run query every to 5 minutes and Lookup data from the last to 5 minutes.
 
@@ -643,30 +635,32 @@ Click Review + create, then click Save.
 <img width="955" height="865" alt="image" src="https://github.com/user-attachments/assets/255eeffe-d65d-4b26-9d8b-315a294ab1e9" />
 
 
-3. Simulate the Attack: Acting like the adversary.
+#### 3. Simulate the Attack:
 
-Open a new tab and navigate back to your Key Vault (kv-secureapp-...).
+Open a new tab and navigate back to your Key Vault.
 
 Go to Secrets under Objects and click your DB-Password secret.
 
 Click the current version, then click Show Secret Value.
 
-This action generates the exact SecretGet event your new Sentinel rule is actively looking for.
+This action generates the SecretGet event your new Sentinel rule is actively looking for.
 
 
 <img width="957" height="866" alt="image" src="https://github.com/user-attachments/assets/dbd8e552-122e-44a3-b542-23bfe180ce65" />
 
 
 
-4. Investigate and Close the Incident: Working the SOC queue.
+#### 4. Investigate and Close the Incident:
 
 Go back to your Microsoft Sentinel tab.
 
 In the left menu, under Threat management, click Incidents.
 
-Wait a few minutes (hit the refresh button occasionally). 
+Wait a few minutes. 
 
-Your Key Vault Secret Accessed incident will appear in the queue.Click on the incident to open the details pane on the right. 
+Your Key Vault Secret Accessed incident will appear in the queue.
+
+Click on the incident to open the details pane on the right. 
 
 Click View full details.
 
@@ -674,7 +668,7 @@ Review the timeline and the raw logs to confirm it was your user account that tr
 
 Change the Status dropdown from New to Closed.
 
-Select the classification True Positive - Suspicious activity (or benign positive, since it was just a test) and add a comment: "Testing custom analytics rule. Confirmed alert fired successfully upon secret access."
+Select the classification True Positive - Suspicious activity and add a comment: "Testing custom analytics rule. Confirmed alert fired successfully upon secret access."
 
 
 If the incident appears in the Sentinel queue and you are successfully able to close it with a classification, the SIEM pipeline is working flawlessly.
